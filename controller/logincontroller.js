@@ -25,4 +25,13 @@ module.exports = {
             secret: `Here is your lucky authorized data, your lucky number is: ${luckyNumber}`
         })
     }
+
+    dashboard1(req, res){
+        console.log("req.user---------------->",req.user)
+        const luckyNumber = Math.floor(Math.random() * 100);
+        res.status(200).json({
+            msg : `Hello, ${req.user.username}`,
+            secret: `Here is your lucky authorized data, your lucky number is: ${luckyNumber}`
+        })
+    }
 }
