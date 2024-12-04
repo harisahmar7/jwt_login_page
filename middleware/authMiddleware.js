@@ -17,6 +17,10 @@ module.exports = {
             })
         }
 
+        }else{
+            res.status(500).json({
+                msg : `Authorization Failed`
+            })
         }
         
     }

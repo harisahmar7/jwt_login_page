@@ -1,20 +1,32 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config();
+const loginModel = require('../model/loginmodel');
 
 module.exports = {
     login(req, res){
+        console.log(req.body)
         const {username, password} = req.body;
         if(!username || !password){
             res.status(400).json({
                 msg: "please provide email & password"
             })
         }else{
-        const token = jwt.sign({username, password}, process.env.JWT_SECRET_KEY, {expiresIn:"30d"})
-        res.status(200).json({
-            msg: `user created`,
-            token: `${token}`
+        loginModel.getLoginUser({username, password}).then((result)=>{
+            result = result.rows;
+            if(result.length){
+            const token = jwt.sign({username, password}, process.env.JWT_SECRET_KEY, {expiresIn:"30d"})
+            res.status(200).json({
+                token: `${token}`
+            })
+
+            }else{
+                res.status(200).json({
+                    msg : `No User Found Please Contact Admin`
+                })
+            }
+            
         })
-        }
+      }
     },
 
     dashboard(req, res){
