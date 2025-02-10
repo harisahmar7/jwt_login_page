@@ -12,7 +12,7 @@ const authenticationMiddleWare = require('./middleware/authMiddleware');
 app.use(express.json());
 app.use(cors());
 app.use(errorHandlerMiddleware)
-// app.use(express.static('./public'));
+app.use(express.static('./public'));
 
 app.post('/api/v1/login', loginController.login)
 app.get('/api/v1/dashboard',authenticationMiddleWare.authenticationMiddleWare, loginController.dashboard)
