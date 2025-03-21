@@ -15,4 +15,9 @@ pipeline {
             }
         }
     }
+    
+    tools {
+    nodejs "NodeJS 16"
+    }
+
 }
