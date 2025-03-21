@@ -18,7 +18,19 @@ app.post('/api/v1/login', loginController.login)
 app.get('/api/v1/dashboard',authenticationMiddleWare.authenticationMiddleWare, loginController.dashboard)
 
 
-app.use(notFoundMiddleware)
+app.use(notFoundMiddleware);
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.listen(port, ()=>{
         console.log(`Server is connected at port: ${port}`); 
