@@ -23,12 +23,15 @@
 
 // }
 
-
 // pipeline {
 //     agent any
 
 //     environment {
 //         PATH = "/usr/bin:$PATH"
+//     }
+
+//     tools {
+//         nodejs "NodeJS 16"
 //     }
 
 //     stages {
@@ -37,12 +40,8 @@
 //                 script {
 //                     echo '📦 Backing up node_modules and package-lock.json...'
 //                     sh '''
-//                         if [ -d node_modules ]; then
-//                             cp -r node_modules node_modules_backup
-//                         fi
-//                         if [ -f package-lock.json ]; then
-//                             cp package-lock.json package-lock_backup.json
-//                         fi
+//                         [ -d node_modules ] && cp -r node_modules node_modules_backup
+//                         [ -f package-lock.json ] && cp package-lock.json package-lock_backup.json
 //                     '''
 //                 }
 //             }
@@ -52,14 +51,13 @@
 //             steps {
 //                 script {
 //                     echo '📥 Installing dependencies...'
-//                     sh 'npm install'
+//                     sh '''
+//                         export PATH=$PATH:/home/haris/.pm2
+//                         npm install
+//                     '''
 //                 }
 //             }
 //         }
-//     }
-
-//     tools {
-//         nodejs "NodeJS 16"
 //     }
 
 //     post {
@@ -67,7 +65,10 @@
 //             script {
 //                 echo '✅ Build and deployment successful!'
 //                 echo '🔄 Reloading application with PM2...'
-//                 sh 'pm2 reload app'
+//                 sh '''
+//                     export PATH=$PATH:/home/haris/.pm2
+//                     pm2 reload app || echo "⚠️ PM2 reload failed!"
+//                 '''
 //                 sh 'rm -rf node_modules_backup package-lock_backup.json || true'
 //                 echo '🚀 Cleanup complete. Application is up-to-date!'
 //             }
@@ -77,18 +78,14 @@
 //             script {
 //                 echo '❌ Build failed! Rolling back to the last working version...'
 //                 sh '''
-//                     if [ -d node_modules_backup ]; then
-//                         rm -rf node_modules
-//                         mv node_modules_backup node_modules
-//                     fi
-
-//                     if [ -f package-lock_backup.json ]; then
-//                         rm -f package-lock.json
-//                         mv package-lock_backup.json package-lock.json
-//                     fi
+//                     [ -d node_modules_backup ] && rm -rf node_modules && mv node_modules_backup node_modules
+//                     [ -f package-lock_backup.json ] && rm -f package-lock.json && mv package-lock_backup.json package-lock.json
 //                 '''
 //                 echo '🔄 Restarting the application with the last working version...'
-//                 sh 'pm2 restart app'
+//                 sh '''
+//                     export PATH=$PATH:/home/haris/.pm2
+//                     pm2 restart app || echo "⚠️ PM2 restart failed!"
+//                 '''
 //             }
 //         }
 //     }
@@ -98,7 +95,12 @@
 //     agent any
 
 //     environment {
-//         PATH = "/home/haris/.nvm/versions/node/v16.20.2/bin:/usr/bin:/usr/local/bin:$PATH"  
+//         PATH = "/usr/bin:$PATH:/home/haris/.pm2:/home/haris/.nvm/versions/node/v16/bin"
+//         PM2_CMD = "/home/haris/.nvm/versions/node/v16/bin/pm2"
+//     }
+
+//     tools {
+//         nodejs "NodeJS 16"
 //     }
 
 //     stages {
@@ -107,12 +109,8 @@
 //                 script {
 //                     echo '📦 Backing up node_modules and package-lock.json...'
 //                     sh '''
-//                         if [ -d node_modules ]; then
-//                             cp -r node_modules node_modules_backup
-//                         fi
-//                         if [ -f package-lock.json ]; then
-//                             cp package-lock.json package-lock_backup.json
-//                         fi
+//                         [ -d node_modules ] && cp -r node_modules node_modules_backup
+//                         [ -f package-lock.json ] && cp package-lock.json package-lock_backup.json
 //                     '''
 //                 }
 //             }
@@ -122,14 +120,12 @@
 //             steps {
 //                 script {
 //                     echo '📥 Installing dependencies...'
-//                     sh 'npm install'
+//                     sh '''
+//                         npm install
+//                     '''
 //                 }
 //             }
 //         }
-//     }
-
-//     tools {
-//         nodejs "NodeJS 16"
 //     }
 
 //     post {
@@ -137,7 +133,9 @@
 //             script {
 //                 echo '✅ Build and deployment successful!'
 //                 echo '🔄 Reloading application with PM2...'
-//                 sh 'sudo /home/haris/.nvm/versions/node/v16.20.2/bin/pm2 reload app'
+//                 sh '''
+//                     sudo -u haris $PM2_CMD reload app || echo "⚠️ PM2 reload failed!"
+//                 '''
 //                 sh 'rm -rf node_modules_backup package-lock_backup.json || true'
 //                 echo '🚀 Cleanup complete. Application is up-to-date!'
 //             }
@@ -147,18 +145,13 @@
 //             script {
 //                 echo '❌ Build failed! Rolling back to the last working version...'
 //                 sh '''
-//                     if [ -d node_modules_backup ]; then
-//                         rm -rf node_modules
-//                         mv node_modules_backup node_modules
-//                     fi
-
-//                     if [ -f package-lock_backup.json ]; then
-//                         rm -f package-lock.json
-//                         mv package-lock_backup.json package-lock.json
-//                     fi
+//                     [ -d node_modules_backup ] && rm -rf node_modules && mv node_modules_backup node_modules
+//                     [ -f package-lock_backup.json ] && rm -f package-lock.json && mv package-lock_backup.json package-lock.json
 //                 '''
 //                 echo '🔄 Restarting the application with the last working version...'
-//                 sh 'sudo /home/haris/.nvm/versions/node/v16.20.2/bin/pm2 restart app'
+//                 sh '''
+//                     sudo -u haris $PM2_CMD restart app || echo "⚠️ PM2 restart failed!"
+//                 '''
 //             }
 //         }
 //     }
@@ -168,7 +161,8 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/usr/bin:$PATH"
+        PATH = "/usr/bin:$PATH:/home/haris/.nvm/versions/node/v16/bin"
+        PM2_CMD = "/home/haris/.nvm/versions/node/v16/bin/pm2"
     }
 
     tools {
@@ -192,10 +186,7 @@ pipeline {
             steps {
                 script {
                     echo '📥 Installing dependencies...'
-                    sh '''
-                        export PATH=$PATH:/home/haris/.pm2
-                        npm install
-                    '''
+                    sh 'npm install'
                 }
             }
         }
@@ -207,8 +198,7 @@ pipeline {
                 echo '✅ Build and deployment successful!'
                 echo '🔄 Reloading application with PM2...'
                 sh '''
-                    export PATH=$PATH:/home/haris/.pm2
-                    pm2 reload app || echo "⚠️ PM2 reload failed!"
+                    sudo -u haris $PM2_CMD reload app || echo "⚠️ PM2 reload failed!"
                 '''
                 sh 'rm -rf node_modules_backup package-lock_backup.json || true'
                 echo '🚀 Cleanup complete. Application is up-to-date!'
@@ -224,13 +214,14 @@ pipeline {
                 '''
                 echo '🔄 Restarting the application with the last working version...'
                 sh '''
-                    export PATH=$PATH:/home/haris/.pm2
-                    pm2 restart app || echo "⚠️ PM2 restart failed!"
+                    sudo -u haris $PM2_CMD restart app || echo "⚠️ PM2 restart failed!"
                 '''
             }
         }
     }
 }
+
+
 
 
 
