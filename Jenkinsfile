@@ -161,8 +161,8 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/usr/bin:$PATH:/home/haris/.nvm/versions/node/v16/bin"
-        PM2_CMD = "/home/haris/.nvm/versions/node/v16/bin/pm2"
+        PATH = "/usr/bin:$PATH:/home/haris/.pm2:/usr/local/bin"
+        PM2_CMD = "/usr/local/bin/pm2"  // Replace with the actual result from `which pm2`
     }
 
     tools {
@@ -198,7 +198,7 @@ pipeline {
                 echo '✅ Build and deployment successful!'
                 echo '🔄 Reloading application with PM2...'
                 sh '''
-                    sudo -u haris $PM2_CMD reload app || echo "⚠️ PM2 reload failed!"
+                    $PM2_CMD reload app || echo "⚠️ PM2 reload failed!"
                 '''
                 sh 'rm -rf node_modules_backup package-lock_backup.json || true'
                 echo '🚀 Cleanup complete. Application is up-to-date!'
@@ -214,12 +214,13 @@ pipeline {
                 '''
                 echo '🔄 Restarting the application with the last working version...'
                 sh '''
-                    sudo -u haris $PM2_CMD restart app || echo "⚠️ PM2 restart failed!"
+                    $PM2_CMD restart app || echo "⚠️ PM2 restart failed!"
                 '''
             }
         }
     }
 }
+
 
 
 
