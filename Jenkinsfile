@@ -137,7 +137,7 @@ pipeline {
             script {
                 echo '✅ Build and deployment successful!'
                 echo '🔄 Reloading application with PM2...'
-                sh '/home/haris/.nvm/versions/node/v16.20.2/bin/pm2 reload app'
+                sh 'sudo /home/haris/.nvm/versions/node/v16.20.2/bin/pm2 reload app'
                 sh 'rm -rf node_modules_backup package-lock_backup.json || true'
                 echo '🚀 Cleanup complete. Application is up-to-date!'
             }
