@@ -82,35 +82,37 @@ pipeline {
 
     post {
         success {
-            script {
-                echo '✅ Build and deployment successful!'
-                sh 'rm -rf node_modules_backup package-lock_backup.json || true'
-                echo '🚀 Application successfully updated!'
-                
-                // Optionally, send a notification (e.g., Slack, email)
-                // sh 'curl -X POST -H "Content-Type: application/json" --data "{\"text\":\"Deployment Successful! 🎉\"}" <YOUR_WEBHOOK_URL>'
+            node {  // ✅ Ensures post actions run within a valid node context
+                script {
+                    echo '✅ Build and deployment successful!'
+                    sh 'rm -rf node_modules_backup package-lock_backup.json || true'
+                    echo '🚀 Application successfully updated!'
+                }
             }
         }
 
         failure {
-            script {
-                echo '❌ Build failed! Rolling back to the last working version...'
-                sh '''
-                    if [ -d node_modules_backup ]; then
-                        rm -rf node_modules
-                        mv node_modules_backup node_modules
-                    fi
-                    
-                    if [ -f package-lock_backup.json ]; then
-                        rm -f package-lock.json
-                        mv package-lock_backup.json package-lock.json
-                    fi
-                '''
-                echo 'Restarting the application with the last working version...'
-                sh 'pm2 restart app'
+            node {  // ✅ Fixes the missing workspace error
+                script {
+                    echo '❌ Build failed! Rolling back to the last working version...'
+                    sh '''
+                        if [ -d node_modules_backup ]; then
+                            rm -rf node_modules
+                            mv node_modules_backup node_modules
+                        fi
+                        
+                        if [ -f package-lock_backup.json ]; then
+                            rm -f package-lock.json
+                            mv package-lock_backup.json package-lock.json
+                        fi
+                    '''
+                    echo 'Restarting the application with the last working version...'
+                    sh 'pm2 restart app'
+                }
             }
         }
     }
 }
+
 
 
