@@ -137,7 +137,7 @@ pipeline {
             script {
                 echo '✅ Build and deployment successful!'
                 echo '🔄 Reloading application with PM2...'
-                sh 'sudo -u haris /home/haris/.nvm/versions/node/v16.20.2/bin/pm2 reload app'
+                sh '/home/haris/.nvm/versions/node/v16.20.2/bin/pm2 reload app'
                 sh 'rm -rf node_modules_backup package-lock_backup.json || true'
                 echo '🚀 Cleanup complete. Application is up-to-date!'
             }
@@ -158,7 +158,7 @@ pipeline {
                     fi
                 '''
                 echo '🔄 Restarting the application with the last working version...'
-                sh 'sudo -u haris /home/haris/.nvm/versions/node/v16.20.2/bin/pm2 restart app'
+                sh '/home/haris/.nvm/versions/node/v16.20.2/bin/pm2 restart app'
             }
         }
     }
