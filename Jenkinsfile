@@ -158,7 +158,7 @@ pipeline {
                     fi
                 '''
                 echo '🔄 Restarting the application with the last working version...'
-                sh '/home/haris/.nvm/versions/node/v16.20.2/bin/pm2 restart app'
+                sh 'sudo /home/haris/.nvm/versions/node/v16.20.2/bin/pm2 restart app'
             }
         }
     }
