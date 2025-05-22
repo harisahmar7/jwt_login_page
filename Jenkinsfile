@@ -161,8 +161,8 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/usr/bin:$PATH:/home/haris/.pm2:/usr/local/bin"
-        PM2_CMD = "/usr/local/bin/pm2"  // Replace with the actual result from `which pm2`
+        PATH = "/var/lib/jenkins/.nvm/versions/node/v16.20.2/bin/pm2"
+        // PM2_CMD = "/usr/local/bin/pm2"  // Replace with the actual result from `which pm2`
     }
 
     tools {
