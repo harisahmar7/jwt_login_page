@@ -7,5 +7,9 @@ module.exports = {
 
     getLoginUser1(userObj){
         return dbConnector.query(`select * from login_master where username = '${userObj.username}'`);
+    },
+
+    getLoginUser2(userObj){
+        return dbConnector.query(`select * from login_master where username = '${userObj.username}'`);
     }
 }
