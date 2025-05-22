@@ -15,7 +15,7 @@ app.use(errorHandlerMiddleware)
 app.use(express.static('./public'));
 
 app.post('/api/v1/login', loginController.login)
-app.get('/api/v1/dashboard', loginController.dashboard)
+app.get('/api/v1/dashboard',authenticationMiddleWare.authenticationMiddleWare, loginController.dashboard)
 
 
 app.use(notFoundMiddleware);
