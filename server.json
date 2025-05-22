@@ -1,7 +1,7 @@
 {
     "apps" : [{
         "script": "app.js",
-        "watch": false,
+        "watch": true,
 	"exec_mode" : "cluster_mode",
 	"instances" : 4
 
